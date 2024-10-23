@@ -2,6 +2,7 @@
 
 use App\Events\HelloWorld;
 use App\Events\MessageReceived;
+use App\Events\PrivateMessageReceived;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -39,9 +40,27 @@ Route::post('/send-message', function () {
         ]);
 });
 
+Route::post('/send-private-message', function () {
+    $data = request()->validate([
+        'message' => 'required|string',
+        'id' => 'required'
+    ]);
+
+    PrivateMessageReceived::dispatch($data['message'], $data['id']);
+
+    return response()
+        ->json([
+            'message' => 'Message successfully sent!'
+        ]);
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/my-messages', function () {
+    return Inertia::render('PrivateMessages');
+})->middleware(['auth', 'verified'])->name('my-messages');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
