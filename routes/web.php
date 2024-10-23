@@ -1,6 +1,7 @@
 <?php
 
 use App\Events\HelloWorld;
+use App\Events\MessageReceived;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,25 @@ Route::get('/', function () {
 Route::get('/visit-count', function () {
     return Inertia::render('VisitCount');
 });
+
+Route::get('/messages', function () {
+    return Inertia::render('Messages');
+});
+
+Route::post('/send-message', function () {
+    $data = request()->validate([
+        'message' => 'required|string',
+        'id' => 'required'
+    ]);
+
+    MessageReceived::dispatch($data['message'], $data['id']);
+
+    return response()
+        ->json([
+            'message' => 'Message successfully sent!'
+        ]);
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
