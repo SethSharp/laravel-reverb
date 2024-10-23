@@ -2,6 +2,7 @@
 
 use App\Events\HelloWorld;
 use App\Events\MessageReceived;
+use App\Events\PersonalMessageReceived;
 use App\Events\PrivateMessageReceived;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -54,6 +55,20 @@ Route::post('/send-private-message', function () {
         ]);
 });
 
+Route::post('/send-private-personal-message', function () {
+    $data = request()->validate([
+        'message' => 'required|string',
+        'id' => 'required'
+    ]);
+
+    PersonalMessageReceived::dispatch($data['message'], $data['id']);
+
+    return response()
+        ->json([
+            'message' => 'Message successfully sent!'
+        ]);
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -61,6 +76,12 @@ Route::get('/dashboard', function () {
 Route::get('/my-messages', function () {
     return Inertia::render('PrivateMessages');
 })->middleware(['auth', 'verified'])->name('my-messages');
+
+Route::get('/personal-messages', function () {
+    return Inertia::render('PersonalMessages', [
+        'user' => auth()->user()
+    ]);
+})->middleware(['auth', 'verified'])->name('personal-messages');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

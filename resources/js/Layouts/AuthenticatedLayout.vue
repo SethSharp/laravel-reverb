@@ -44,6 +44,13 @@ const showingNavigationDropdown = ref(false);
                                   :href="route('my-messages')"
                                   :active="route().current('my-messages')"
                               >
+                                Messages
+                              </NavLink>
+
+                              <NavLink
+                                  :href="route('personal-messages')"
+                                  :active="route().current('personal-messages')"
+                              >
                                 My Messages
                               </NavLink>
                             </div>
